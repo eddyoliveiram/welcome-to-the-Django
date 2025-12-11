@@ -27,11 +27,16 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-2. Run migrations to create the database:
+2. Run migrations and seed the database:
 
 ```bash
-python manage.py migrate
+python manage.py migrate && python manage.py seed
 ```
+
+This single command will:
+- Create all database tables (migrations)
+- Populate with 3 test users, 10 posts, and 10 comments
+- Create permission groups (Moderators)
 
 3. Start the development server:
 
@@ -43,13 +48,19 @@ The application will be available at `http://127.0.0.1:8000/`
 
 ## Default Users
 
-The database is pre-populated with 3 test users, 10 posts, and 10 comments:
+After running `python manage.py seed`, the database will be populated with:
 
+**3 Test Users:**
 | Username | Email | Name | Password |
 |----------|-------|------|----------|
 | user1 | user1@example.com | João Silva | password123 |
 | user2 | user2@example.com | Maria Santos | password123 |
 | user3 | user3@example.com | Pedro Oliveira | password123 |
+
+**Additional Data:**
+- 10 blog posts distributed among users
+- 10 comments on various posts
+- 1 permission group: **Moderators** (with full permissions for posts and comments)
 
 ## Admin Access
 
@@ -60,6 +71,25 @@ python manage.py createsuperuser
 ```
 
 Then access the admin panel at `http://127.0.0.1:8000/admin/`
+
+## Database Commands
+
+### Reset Database
+To reset the database and start fresh:
+
+```bash
+del db.sqlite3
+python manage.py migrate && python manage.py seed
+```
+
+### Seed Only
+If you already have the database but want to populate it with test data:
+
+```bash
+python manage.py seed
+```
+
+Note: The seed command uses `get_or_create`, so it won't duplicate existing data.
 
 ## Project Structure
 
@@ -75,7 +105,10 @@ WelcomeToTheJungle/
 │   ├── forms.py         # Django forms
 │   ├── urls.py          # URL routing
 │   ├── admin.py         # Admin configuration
-│   └── migrations/      # Database migrations
+│   ├── migrations/      # Database migrations
+│   └── management/      # Custom management commands
+│       └── commands/
+│           └── seed.py  # Database seeding command
 ├── templates/           # HTML templates
 ├── manage.py            # Django management
 └── requirements.txt     # Project dependencies
